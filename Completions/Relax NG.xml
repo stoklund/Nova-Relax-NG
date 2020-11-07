@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<completions>
+    <provider>
+        <syntax>relaxng</syntax>
+        <selector>*:not(comment,string)</selector>
+        <expression>\b\w[-:\w]*</expression>
+        <set>relaxng.keywords</set>
+        <set>relaxng.datatypes.core</set>
+        <!-- Package = namespace, category = grammar definition -->
+        <symbols type="package,category"/>
+    </provider>
+
+    <set name="relaxng.keywords" symbol="keyword">
+        <completion string="element">
+            <behavior>
+                <append> $[name] {$[children]}</append>
+            </behavior>
+        </completion>
+        <completion string="attribute">
+            <behavior>
+                <append> $[name] {$[data]}</append>
+            </behavior>
+        </completion>
+        <completion string="datatypes"/>
+        <completion string="default"/>
+        <completion string="div"/>
+        <completion string="empty"/>
+        <completion string="external"/>
+        <completion string="grammar"/>
+        <completion string="include"/>
+        <completion string="inherit"/>
+        <completion string="list"/>
+        <completion string="mixed"/>
+        <completion string="namespace"/>
+        <completion string="notAllowed"/>
+        <completion string="parent"/>
+        <completion string="start"/>
+        <completion string="string"/>
+        <completion string="text"/>
+        <completion string="token"/>
+    </set>
+
+    <set name="relaxng.datatypes.core" symbol="type">
+        <completion string="xsd:anyURI"/>
+        <completion string="xsd:base64Binary"/>
+        <completion string="xsd:boolean"/>
+        <completion string="xsd:byte"/>
+        <completion string="xsd:date"/>
+        <completion string="xsd:dateTime"/>
+        <completion string="xsd:decimal"/>
+        <completion string="xsd:double"/>
+        <completion string="xsd:duration"/>
+        <completion string="xsd:ENTITIES"/>
+        <completion string="xsd:ENTITY"/>
+        <completion string="xsd:float"/>
+        <completion string="xsd:gDay"/>
+        <completion string="xsd:gMonth"/>
+        <completion string="xsd:gMonthDay"/>
+        <completion string="xsd:gYear"/>
+        <completion string="xsd:gYearMonth"/>
+        <completion string="xsd:hexBinary"/>
+        <completion string="xsd:ID"/>
+        <completion string="xsd:IDREF"/>
+        <completion string="xsd:IDREFS"/>
+        <completion string="xsd:int"/>
+        <completion string="xsd:integer"/>
+        <completion string="xsd:language"/>
+        <completion string="xsd:long"/>
+        <completion string="xsd:Name"/>
+        <completion string="xsd:NCName"/>
+        <completion string="xsd:negativeInteger"/>
+        <completion string="xsd:NMTOKEN"/>
+        <completion string="xsd:NMTOKENS"/>
+        <completion string="xsd:nonNegativeInteger"/>
+        <completion string="xsd:nonPositiveInteger"/>
+        <completion string="xsd:normalizedString"/>
+        <completion string="xsd:NOTATION"/>
+        <completion string="xsd:positiveInteger"/>
+        <completion string="xsd:QName"/>
+        <completion string="xsd:short"/>
+        <completion string="xsd:string"/>
+        <completion string="xsd:time"/>
+        <completion string="xsd:token"/>
+        <completion string="xsd:unsignedByte"/>
+        <completion string="xsd:unsignedInt"/>
+        <completion string="xsd:unsignedLong"/>
+        <completion string="xsd:unsignedShort"/>
+    </set>
+</completions>

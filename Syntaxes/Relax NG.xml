@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<syntax name="relaxng">
+    <meta>
+        <name>Relax NG</name>
+        <type>structured</type>
+        <preferred-file-extension>rnc</preferred-file-extension>
+    </meta>
+
+    <detectors>
+        <extension>rnc</extension>
+    </detectors>
+
+    <indentation>
+        <increase>
+            <expression>[{=]\s*$</expression>
+        </increase>
+        <decrease>
+            <expression>^\s*\}</expression>
+        </decrease>
+    </indentation>
+
+    <comments>
+        <single>
+            <expression>#</expression>
+        </single>
+    </comments>
+
+    <brackets>
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
+    </brackets>
+
+    <surrounding-pairs>
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
+        <pair open="&apos;" close="&apos;" />
+        <pair open="&quot;" close="&quot;" />
+    </surrounding-pairs>
+
+    <scopes>
+        <include syntax="self" collection="decl"/>
+        <include syntax="self" collection="grammar"/>
+    </scopes>
+
+    <collections>
+        <!-- Top-level declarations at the start of the file. -->
+        <collection name="decl">
+            <scope name="relaxng.default.package">
+                <expression>\b(default)\s+(namespace)\s+(=)</expression>
+                <capture number="1" name="relaxng.keyword"/>
+                <capture number="2" name="relaxng.keyword"/>
+                <capture number="3" name="relaxng.operator"/>
+            </scope>
+
+            <scope name="relaxng.definition.package">
+                <symbol type="package"/>
+                <expression>\b(namespace)\s+(\w[-\w]*)\s+(=)</expression>
+                <capture number="1" name="relaxng.keyword"/>
+                <capture number="2" name="relaxng.identifier.package.name"/>
+                <capture number="3" name="relaxng.operator"/>
+            </scope>
+        </collection>
+
+        <!-- Grammar constructs. Top-level or inside a `grammar { ...}` -->
+        <collection name="grammar">
+            <!-- Grammar definitions -->
+            <scope name="relaxng.definition.category">
+                <symbol type="category" scope="global">
+                    <!-- We can't detect the end of the pattern, so rely on indentation. -->
+                    <context behavior="whitespace"/>
+                </symbol>
+                <starts-with>
+                    <expression>\b(\w[-\w]*)\s+([|&amp;]?=)</expression>
+                    <capture number="1" name="relaxng.identifier.global.name"/>
+                    <capture number="2" name="relaxng.operator"/>
+                </starts-with>
+                <ends-with>
+                    <expression>$</expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="pattern"/>
+                </subscopes>
+            </scope>
+
+            <include syntax="self" collection="pattern"/>
+       </collection>
+
+        <collection name="pattern">
+            <scope name="relaxng.definition.grammar">
+                <symbol type="block"/>
+                <starts-with>
+                    <expression>\b(grammar)\s+({)</expression>
+                    <capture number="1" name="relaxng.keyword"/>
+                    <capture number="2" name="relaxng.bracket"/>
+                </starts-with>
+                <ends-with>
+                    <expression>}</expression>
+                    <capture number="0" name="relaxng.bracket"/>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="grammar"/>
+                </subscopes>
+            </scope>
+
+            <!-- Use `tag` symbols to represent elements -->
+            <scope name="relaxng.definition.tag">
+                <symbol type="tag">
+                    <context behavior="subtree"/>
+                </symbol>
+                <starts-with>
+                    <expression>\b(element)\s+([a-zA-Z_][-:\w]*)\s+({)</expression>
+                    <capture number="1" name="relaxng.keyword"/>
+                    <capture number="2" name="relaxng.identifier.key.name"/>
+                    <capture number="3" name="relaxng.bracket"/>
+                </starts-with>
+                <ends-with>
+                    <expression>}</expression>
+                    <capture number="0" name="relaxng.bracket"/>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="pattern"/>
+                </subscopes>
+            </scope>
+
+            <!-- Use `property` symbols to represent attributes -->
+            <scope name="relaxng.definition.property">
+                <symbol type="property">
+                    <context behavior="subtree"/>
+                </symbol>
+                <starts-with>
+                    <expression>\b(attribute)\s+([a-zA-Z_][-:\w]*)\s+({)</expression>
+                    <capture number="1" name="relaxng.keyword"/>
+                    <capture number="2" name="relaxng.identifier.property.name"/>
+                    <capture number="3" name="relaxng.bracket"/>
+                </starts-with>
+                <ends-with>
+                    <expression>}</expression>
+                    <capture number="0" name="relaxng.bracket"/>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="pattern"/>
+                </subscopes>
+            </scope>
+
+            <scope name="relaxng.bracket.curly">
+                <symbol type="block">
+                    <context behavior="subtree"/>
+                </symbol>
+                <starts-with>
+                    <expression>\{</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>\}</expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="pattern"/>
+                </subscopes>
+            </scope>
+
+            <scope name="relaxng.bracket.paren">
+                <symbol type="block">
+                    <context behavior="subtree"/>
+                </symbol>
+                <starts-with>
+                    <expression>\(</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>\)</expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="pattern"/>
+                </subscopes>
+            </scope>
+
+            <include syntax="self" collection="common"/>
+        </collection>
+
+        <collection name="common">
+            <scope name="relaxng.comment">
+                <expression>\#.*</expression>
+            </scope>
+
+            <scope name="relaxng.string.double">
+                <expression>"[^"\n]*"</expression>
+            </scope>
+
+            <scope name="relaxng.string.single">
+                <expression>'[^'\n]*'</expression>
+            </scope>
+
+            <scope name="relaxng.operator">
+                <expression>[-,|?*+=&amp;]</expression>
+            </scope>
+
+            <scope name="relaxng.keyword">
+                <strings>
+                    <string>attribute</string>
+                    <string>datatypes</string>
+                    <string>default</string>
+                    <string>div</string>
+                    <string>element</string>
+                    <string>empty</string>
+                    <string>external</string>
+                    <string>grammar</string>
+                    <string>include</string>
+                    <string>inherit</string>
+                    <string>list</string>
+                    <string>mixed</string>
+                    <string>namespace</string>
+                    <string>notAllowed</string>
+                    <string>parent</string>
+                    <string>start</string>
+                    <string>string</string>
+                    <string>text</string>
+                    <string>token</string>
+                </strings>
+            </scope>
+
+            <scope name="relaxng.identifier.type.core">
+                <strings>
+                    <string>xsd:anyURI</string>
+                    <string>xsd:base64Binary</string>
+                    <string>xsd:boolean</string>
+                    <string>xsd:byte</string>
+                    <string>xsd:date</string>
+                    <string>xsd:dateTime</string>
+                    <string>xsd:decimal</string>
+                    <string>xsd:double</string>
+                    <string>xsd:duration</string>
+                    <string>xsd:ENTITIES</string>
+                    <string>xsd:ENTITY</string>
+                    <string>xsd:float</string>
+                    <string>xsd:gDay</string>
+                    <string>xsd:gMonth</string>
+                    <string>xsd:gMonthDay</string>
+                    <string>xsd:gYear</string>
+                    <string>xsd:gYearMonth</string>
+                    <string>xsd:hexBinary</string>
+                    <string>xsd:ID</string>
+                    <string>xsd:IDREF</string>
+                    <string>xsd:IDREFS</string>
+                    <string>xsd:int</string>
+                    <string>xsd:integer</string>
+                    <string>xsd:language</string>
+                    <string>xsd:long</string>
+                    <string>xsd:Name</string>
+                    <string>xsd:NCName</string>
+                    <string>xsd:negativeInteger</string>
+                    <string>xsd:NMTOKEN</string>
+                    <string>xsd:NMTOKENS</string>
+                    <string>xsd:nonNegativeInteger</string>
+                    <string>xsd:nonPositiveInteger</string>
+                    <string>xsd:normalizedString</string>
+                    <string>xsd:NOTATION</string>
+                    <string>xsd:positiveInteger</string>
+                    <string>xsd:QName</string>
+                    <string>xsd:short</string>
+                    <string>xsd:string</string>
+                    <string>xsd:time</string>
+                    <string>xsd:token</string>
+                    <string>xsd:unsignedByte</string>
+                    <string>xsd:unsignedInt</string>
+                    <string>xsd:unsignedLong</string>
+                    <string>xsd:unsignedShort</string>
+                </strings>
+            </scope>
+
+            <scope name="relaxng.identifier">
+                <expression>[a-zA-Z_][-:\w]*</expression>
+            </scope>
+        </collection>
+
+
+    </collections>
+</syntax>

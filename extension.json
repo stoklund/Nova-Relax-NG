@@ -1,0 +1,10 @@
+{
+    "identifier": "stoklund.Relax-NG",
+    "name": "Relax NG compact",
+    "organization": "Jakob Stoklund Olesen",
+    "description": "Syntax highlighting for the compact Relax NG schema language",
+    "version": "1.0",
+    "bugs": "https://github.com/stoklund/Nova-Relax-NG/issues",
+    "repository": "https://github.com/stoklund/Nova-Relax-NG",
+    "categories": ["languages"]
+}
